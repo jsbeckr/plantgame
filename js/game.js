@@ -1,29 +1,31 @@
-var stage = new PIXI.Stage(0x336699);
-var renderer = PIXI.autoDetectRenderer(800, 600);
+var Seed = require("./seed.js");
 
+var stage = new PIXI.Stage(0x336699, true);
+var renderer = PIXI.autoDetectRenderer(800, 600);
 document.getElementById("container").appendChild(renderer.view);
 
+var entities = [];
 var seed;
 
 function init () {
-  seed = new PIXI.Graphics();
-  seed.beginFill(0x00FF00);
-  seed.moveTo(0, 0);
-  seed.lineTo(-50, 100);
-  seed.lineTo(50, 100);
-  seed.endFill();
-  stage.addChild(seed);
+  stage.click = function (data) {
+    console.log(data);
+    var pos = data.getLocalPosition(stage);
+    seed = new Seed(pos.x, pos.y);
+    entities.push(seed);
+    stage.addChild(seed.getGraphics());
+  };
 
   requestAnimFrame(animate);
 }
 
 function animate () {
-  requestAnimFrame(animate);
-
-  seed.position.x += 0.1; 
-  seed.position.y += 0.1; 
+  for (var i = 0; i < entities.length; i++) {
+    entities[i].update();
+  }
 
   renderer.render(stage);
+  requestAnimFrame(animate);
 }
 
 init();
